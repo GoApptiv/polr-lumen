@@ -1,18 +1,27 @@
 <?php
 namespace App\Http\Controllers\Api;
+
 use Illuminate\Http\Request;
 
 use App\Factories\LinkFactory;
 use App\Helpers\LinkHelper;
 use App\Exceptions\Api\ApiException;
+use Illuminate\Support\Facades\Log;
 
-class ApiLinkController extends ApiController {
+class ApiLinkController extends ApiController
+{
     protected function getShortenedLink($long_url, $is_secret, $custom_ending, $link_ip, $username, $response_type) {
         try {
             $formatted_link = LinkFactory::createLink(
-                $long_url, $is_secret, $custom_ending, $link_ip, $username, false, true);
-        }
-        catch (\Exception $e) {
+                $long_url,
+                $is_secret,
+                $custom_ending,
+                $link_ip,
+                $username,
+                false,
+                true
+            );
+        } catch (\Exception $e) {
             throw new ApiException('CREATION_ERROR', $e->getMessage(), 400, $response_type);
         }
 
@@ -132,9 +141,27 @@ class ApiLinkController extends ApiController {
                 'updated_at' => $link['updated_at'],
                 'created_at' => $link['created_at']
             ], 'lookup', $response_type, $link['long_url']);
-        }
-        else {
+        } else {
             throw new ApiException('NOT_FOUND', 'Link not found.', 404, $response_type);
         }
+    }
+
+    public function editLinkLongUrl(Request $request, $url) {
+        $link = LinkHelper::linkExists($url);
+
+        $new_long_url = $request->input('long_url');
+
+        $this->validate($request, [
+            'long_url' => 'required|url',
+        ]);
+
+        if (!$link) {
+            return self::badRequest(["message" => 'Short url not found']);
+        }
+
+        $link->long_url = $new_long_url;
+        $link->save();
+
+        return self::done('Long Url Update', $new_long_url);
     }
 }
