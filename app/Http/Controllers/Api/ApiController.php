@@ -14,8 +14,52 @@ class ApiController extends Controller {
             return response(json_encode($response))
                 ->header('Content-Type', 'application/json')
                 ->header('Access-Control-Allow-Origin', '*');
+        } else {
+            if ($plain_text_response) {
+                // return alternative plain text response if provided
+                $result = $plain_text_response;
+            }
+            // assume plain text if json not requested
+            return response($result)
+                ->header('Content-Type', 'text/plain')
+                ->header('Access-Control-Allow-Origin', '*');
         }
-        else {
+    }
+
+    protected static function done($action, $result, $response_type='json', $plain_text_response=false) {
+        $response = [
+            "success" => true,
+            "action" => $action,
+            "result" => $result
+        ];
+
+        if ($response_type == 'json') {
+            return response(json_encode($response))
+                ->header('Content-Type', 'application/json')
+                ->header('Access-Control-Allow-Origin', '*');
+        } else {
+            if ($plain_text_response) {
+                // return alternative plain text response if provided
+                $result = $plain_text_response;
+            }
+            // assume plain text if json not requested
+            return response($result)
+                ->header('Content-Type', 'text/plain')
+                ->header('Access-Control-Allow-Origin', '*');
+        }
+    }
+
+    public static function badRequest($errors, $response_type='json', $plain_text_response=false) {
+        $response = [
+            "success" => false,
+            "errors" => $errors,
+        ];
+
+        if ($response_type == 'json') {
+            return response(json_encode($response))
+                ->header('Content-Type', 'application/json')
+                ->header('Access-Control-Allow-Origin', '*');
+        } else {
             if ($plain_text_response) {
                 // return alternative plain text response if provided
                 $result = $plain_text_response;

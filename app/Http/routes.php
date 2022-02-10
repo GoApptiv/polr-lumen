@@ -67,6 +67,7 @@ $app->group(['prefix' => '/api/v2', 'namespace' => 'App\Http\Controllers\Api', '
     $app->post('action/shorten', ['as' => 'api_shorten_url', 'uses' => 'ApiLinkController@shortenLink']);
     $app->get('action/shorten', ['as' => 'api_shorten_url', 'uses' => 'ApiLinkController@shortenLink']);
     $app->post('action/shorten_bulk', ['as' => 'api_shorten_url_bulk', 'uses' => 'ApiLinkController@shortenLinksBulk']);
+    $app->put('action/shorten/short_url/{url}', ['as' => 'api_edit_link_long_url', 'uses' => 'ApiLinkController@editLinkLongUrl']);
 
     /* API lookup endpoints */
     $app->post('action/lookup', ['as' => 'api_lookup_url', 'uses' => 'ApiLinkController@lookupLink']);
