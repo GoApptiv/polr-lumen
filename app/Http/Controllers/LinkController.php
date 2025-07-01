@@ -47,17 +47,41 @@ class LinkController extends Controller {
         return view('shorten_result', ['short_url' => $short_url]);
     }
 
-    public function performRedirect(Request $request, $short_url, $secret_key=false) {
-        $link = Link::where('short_url', $short_url)
-            ->first();
+    /**
+     * Handles redirect via path parameter (/{short_url})
+     */
+    public function performRedirect(Request $request, $short_url, $secret_key = false)
+    {
+        return $this->handleRedirect($request, $short_url, $secret_key);
+    }
+
+    /**
+     * Handles redirect via query parameter (/r?k={short_url})
+     */
+    public function performRedirectWithQuery(Request $request)
+    {
+        $short_url = $request->query('k');
+
+        if (!$short_url) {
+            return abort(400, 'Missing short URL');
+        }
+
+        return $this->handleRedirect($request, $short_url);
+    }
+
+    /**
+     * Shared logic for performing redirect
+     */
+    private function handleRedirect(Request $request, $short_url, $secret_key = false)
+    {
+        $link = Link::where('short_url', $short_url)->first();
 
         // Return 404 if link not found
-        if ($link == null) {
-        	return abort(404);
+        if (!$link) {
+            return abort(404);
         }
 
         // Return an error if the link has been disabled
-        // or return a 404 if SETTING_REDIRECT_404 is set to true
         if ($link->is_disabled == 1) {
             if (env('SETTING_REDIRECT_404')) {
                 return abort(404);
@@ -68,38 +92,24 @@ class LinkController extends Controller {
             ]);
         }
 
-        // Return a 403 if the secret key is incorrect
-        $link_secret_key = $link->secret_key;
-        if ($link_secret_key) {
-        	if (!$secret_key) {
-        		// if we do not receieve a secret key
-        		// when we are expecting one, return a 403
-        		return abort(403);
-        	}
-        	else {
-        		if ($link_secret_key != $secret_key) {
-        			// a secret key is provided, but it is incorrect
-        			return abort(403);
-        		}
-        	}
+        // Check secret key if applicable
+        if ($link->secret_key) {
+            if (!$secret_key || $link->secret_key !== $secret_key) {
+                return abort(403);
+            }
         }
 
         // Increment click count
-        $long_url = $link->long_url;
-        $clicks = intval($link->clicks);
-
-        if (is_int($clicks)) {
-            $clicks += 1;
-        }
-        $link->clicks = $clicks;
+        $link->clicks = intval($link->clicks) + 1;
         $link->save();
 
+        // Advanced analytics
         if (env('SETTING_ADV_ANALYTICS')) {
-            // Record advanced analytics if option is enabled
             ClickHelper::recordClick($link, $request);
         }
-        // Redirect to final destination
-        return redirect()->to($long_url, 301);
+
+        // Redirect
+        return redirect()->to($link->long_url, 301);
     }
 
 }
