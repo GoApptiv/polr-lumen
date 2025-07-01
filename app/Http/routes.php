@@ -79,3 +79,8 @@ $app->group(['prefix' => '/api/v2', 'namespace' => 'App\Http\Controllers\Api', '
     $app->get('data/link', ['as' => 'api_link_analytics', 'uses' => 'ApiAnalyticsController@lookupLinkStats']);
     $app->post('data/link', ['as' => 'api_link_analytics', 'uses' => 'ApiAnalyticsController@lookupLinkStats']);
 });
+
+$app->group(['prefix' => '/api/v3', 'namespace' => 'App\Http\Controllers\Api', 'middleware' => 'api'], function ($app) {
+    /* API shorten endpoints */
+    $app->post('action/shorten', ['as' => 'api_shorten_url', 'uses' => 'ApiLinkController@getShortenedLinkV2']);
+});
