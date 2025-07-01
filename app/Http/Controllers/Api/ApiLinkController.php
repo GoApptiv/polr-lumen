@@ -25,7 +25,25 @@ class ApiLinkController extends ApiController
             throw new ApiException('CREATION_ERROR', $e->getMessage(), 400, $response_type);
         }
 
-        return $formatted_link;
+        return $formatted_link['formatted_link'];
+    }
+
+    protected function getShortenedLinkV2($long_url, $is_secret, $custom_ending, $link_ip, $username, $response_type) {
+        try {
+            $formatted_links = LinkFactory::createLink(
+                $long_url,
+                $is_secret,
+                $custom_ending,
+                $link_ip,
+                $username,
+                false,
+                true
+            );
+        } catch (\Exception $e) {
+            throw new ApiException('CREATION_ERROR', $e->getMessage(), 400, $response_type);
+        }
+
+        return $formatted_links;
     }
 
     public function shortenLink(Request $request) {

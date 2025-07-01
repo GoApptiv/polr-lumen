@@ -26,6 +26,23 @@ class LinkFactory {
         return $short_url;
     }
 
+    private static function formatLinkQueryParamFormat($link_ending, $secret_ending=false) {
+        /**
+        * Given a link ending and a boolean indicating whether a secret ending is needed,
+        * return a link formatted with app protocol, app address, and link ending.
+        * @param string $link_ending
+        * @param boolean $secret_ending
+        * @return string
+        */
+        $short_url = env('APP_PROTOCOL') . env('APP_ADDRESS') . '/r?k=' . $link_ending;
+
+        if ($secret_ending) {
+            $short_url .= '/' . $secret_ending;
+        }
+
+        return $short_url;
+    }
+
     public static function createLink($long_url, $is_secret=false, $custom_ending=null, $link_ip='127.0.0.1', $creator=false, $return_object=false, $is_api=false) {
         /**
         * Given parameters needed to create a link, generate appropriate ending and
@@ -112,12 +129,17 @@ class LinkFactory {
         $link->save();
 
         $formatted_link = self::formatLink($link_ending, $secret_key);
+        $formatted_link_query = self::formatLinkQueryParamFormat($link_ending, $secret_key);
 
         if ($return_object) {
             return $link;
         }
 
-        return $formatted_link;
+        return [
+            'formatted_link' => $formatted_link,
+            'formatted_link_query' => $formatted_link_query,
+            'key' => $link_ending,
+        ];
     }
 
 }

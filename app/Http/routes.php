@@ -66,6 +66,7 @@ $app->group(['prefix' => '/api/v2', 'namespace' => 'App\Http\Controllers'], func
 $app->group(['prefix' => '/api/v2', 'namespace' => 'App\Http\Controllers\Api', 'middleware' => 'api'], function ($app) {
     /* API shorten endpoints */
     $app->post('action/shorten', ['as' => 'api_shorten_url', 'uses' => 'ApiLinkController@shortenLink']);
+    $app->post('action/v2/shorten', ['as' => 'api_shorten_url', 'uses' => 'ApiLinkController@getShortenedLinkV2']);
     $app->get('action/shorten', ['as' => 'api_shorten_url', 'uses' => 'ApiLinkController@shortenLink']);
     $app->post('action/shorten_bulk', ['as' => 'api_shorten_url_bulk', 'uses' => 'ApiLinkController@shortenLinksBulk']);
     $app->put('action/shorten/short_url/{url}', ['as' => 'api_edit_link_long_url', 'uses' => 'ApiLinkController@editLinkLongUrl']);

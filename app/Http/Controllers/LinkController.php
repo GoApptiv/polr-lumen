@@ -44,7 +44,7 @@ class LinkController extends Controller {
             return self::renderError($e->getMessage());
         }
 
-        return view('shorten_result', ['short_url' => $short_url]);
+        return view('shorten_result', ['short_url' => $short_url['formatted_link']]);
     }
 
     /**
