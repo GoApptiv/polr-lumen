@@ -64,47 +64,55 @@ class LinkFactory {
             throw new \Exception('Sorry, but your link is longer than the
                 maximum length allowed.');
         }
-
+    
         $is_already_short = LinkHelper::checkIfAlreadyShortened($long_url);
 
         if ($is_already_short) {
             throw new \Exception('Sorry, but your link already
                 looks like a shortened URL.');
         }
-
-        if (!$is_secret && (!isset($custom_ending) || $custom_ending === '') && (LinkHelper::longLinkExists($long_url, $creator) !== false)) {
-            // if link is not specified as secret, is non-custom, and
-            // already exists in Polr, lookup the value and return
-            $existing_link = LinkHelper::longLinkExists($long_url, $creator);
-            return self::formatLink($existing_link);
-        }
-
-        if (isset($custom_ending) && $custom_ending !== '') {
-            // has custom ending
-            $ending_conforms = LinkHelper::validateEnding($custom_ending);
-            if (!$ending_conforms) {
-                throw new \Exception('Custom endings
-                    can only contain alphanumeric characters, hyphens, and underscores.');
+    
+        //  Reuse existing link if not secret
+        if (!$is_secret && empty($custom_ending)) {
+            $existingLink = LinkHelper::longLinkExists($long_url, $creator);
+            if ($existingLink) {
+                return $return_object ? $existingLink : [
+                    'formatted_link' => self::formatLink($existingLink->short_url),
+                    'formatted_link_query' => self::formatLinkQueryParamFormat($existingLink->short_url),
+                    'key' => $existingLink->short_url,
+                ];
             }
-
-            $ending_in_use = LinkHelper::linkExists($custom_ending);
-            if ($ending_in_use) {
+        }
+    
+        //  Reuse existing secret link if secret
+        if ($is_secret && empty($custom_ending)) {
+            $existingSecretLink = LinkHelper::secretLinkExists($long_url, $creator);
+            if ($existingSecretLink) {
+                return $return_object ? $existingSecretLink : [
+                    'formatted_link' => self::formatLink($existingSecretLink->short_url, $existingSecretLink->secret_key),
+                    'formatted_link_query' => self::formatLinkQueryParamFormat($existingSecretLink->short_url, $existingSecretLink->secret_key),
+                    'key' => $existingSecretLink->short_url,
+                ];
+            }
+        }
+    
+        // Custom ending handling
+        if (!empty($custom_ending)) {
+            if (!LinkHelper::validateEnding($custom_ending)) {
+                throw new \Exception('Custom endings can only contain alphanumeric characters, hyphens, and underscores.');
+            }
+    
+            if (LinkHelper::linkExists($custom_ending)) {
                 throw new \Exception('This URL ending is already in use.');
             }
-
+    
             $link_ending = $custom_ending;
+        } else {
+            $link_ending = env('SETTING_PSEUDORANDOM_ENDING')
+                ? LinkHelper::findPseudoRandomEnding()
+                : LinkHelper::findSuitableEnding();
         }
-        else {
-            if (env('SETTING_PSEUDORANDOM_ENDING')) {
-                // generate a pseudorandom ending
-                $link_ending = LinkHelper::findPseudoRandomEnding();
-            }
-            else {
-                // generate a counter-based ending or use existing ending if possible
-                $link_ending = LinkHelper::findSuitableEnding();
-            }
-        }
-
+    
         $link = new Link;
         $link->short_url = $link_ending;
         $link->long_url  = $long_url;
@@ -112,34 +120,25 @@ class LinkFactory {
         $link->is_custom = $custom_ending != null;
 
         $link->is_api    = $is_api;
-
+    
         if ($creator) {
             $link->creator = $creator;
         }
-
+    
+        $secret_key = false;
         if ($is_secret) {
             $rand_bytes_num = intval(env('POLR_SECRET_BYTES'));
             $secret_key = CryptoHelper::generateRandomHex($rand_bytes_num);
             $link->secret_key = $secret_key;
         }
-        else {
-            $secret_key = false;
-        }
-
+    
         $link->save();
-
-        $formatted_link = self::formatLink($link_ending, $secret_key);
-        $formatted_link_query = self::formatLinkQueryParamFormat($link_ending, $secret_key);
-
-        if ($return_object) {
-            return $link;
-        }
-
-        return [
-            'formatted_link' => $formatted_link,
-            'formatted_link_query' => $formatted_link_query,
+    
+        return $return_object ? $link : [
+            'formatted_link' => self::formatLink($link_ending, $secret_key),
+            'formatted_link_query' => self::formatLinkQueryParamFormat($link_ending, $secret_key),
             'key' => $link_ending,
         ];
     }
-
+    
 }
