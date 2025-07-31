@@ -1,27 +1,37 @@
-@-webkit-keyframes colorpulse {
+/* Fade-in animation for page load */
+.about-contents {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
   0% {
-    background: #0bc0c2; }
-  25% {
-    background: #7f8c8d; }
-  50% {
-    background: #16a085; }
+      opacity: 0;
+      transform: translateY(15px);
+  }
   100% {
-    background: #0bc0c2; } }
-@keyframes colorpulse {
-  0% {
-    background: #0bc0c2; }
-  25% {
-    background: #7f8c8d; }
-  50% {
-    background: #16a085; }
-  100% {
-    background: #0bc0c2; } }
-@-moz-keyframes colorpulse {
-  0% {
-    background: #0bc0c2; }
-  25% {
-    background: #7f8c8d; }
-  50% {
-    background: #16a085; }
-  100% {
-    background: #0bc0c2; } }
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* Smooth link underline effect */
+.about-contents a {
+  position: relative;
+}
+
+.about-contents a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  left: 0;
+  bottom: -3px;
+  background-color: #4669fa;
+  transition: width 0.3s ease;
+}
+
+.about-contents a:hover::after,
+.about-contents a:focus::after {
+  width: 100%;
+}
