@@ -25,68 +25,62 @@ class LinkHelper {
         ];
 
         foreach ($shortener_domains as $shortener_domain) {
-            $url_segment = ('://' . $shortener_domain);
-            if (strstr($long_link, $url_segment)) {
+            if (strstr($long_link, '://' . $shortener_domain)) {
                 return true;
             }
         }
+
         return false;
     }
 
-    static public function linkExists($link_ending) {
-        /**
-         * Provided a link ending (string),
-         * return the link object, or false.
-         * @return Link model instance
-         */
-
-        $link = Link::where('short_url', $link_ending)
-            ->first();
-
-        if ($link != null) {
-            return $link;
-        }
-        else {
-            return false;
-        }
+    public static function linkExists($link_ending)
+    {
+        $link = Link::where('short_url', $link_ending)->first();
+        return $link ?: false;
     }
 
-    static public function longLinkExists($long_url, $username=false) {
-        /**
-         * Provided a long link (string),
-         * check whether the link is in the DB.
-         * If a username is provided, only search for links created by the
-         * user.
-         * @return boolean
-         */
-        $link_base = Link::longUrl($long_url)
+    public static function longLinkExists($long_url, $username = false)
+    {
+        $query = Link::longUrl($long_url)
             ->where('is_custom', 0)
-            ->where('secret_key', '');
+            ->where(function ($q) {
+                $q->whereNull('secret_key')->orWhere('secret_key', '');
+            });
 
-        if (is_null($username)) {
-            // Search for links without a creator only
-            $link = $link_base->where('creator', '')->first();
-        }
-        else if (($username !== false)) {
-            // Search for links created by $username only
-            $link = $link_base->where('creator', $username)->first();
-        }
-        else {
-            // Search for links created by any user
-            $link = $link_base->first();
+        if ($username === null) {
+            $link = $query->where(function ($q) {
+                $q->whereNull('creator')->orWhere('creator', '');
+            })->first();
+        } elseif ($username !== false) {
+            $link = $query->where('creator', $username)->first();
+        } else {
+            $link = $query->first();
         }
 
-        if ($link == null) {
-            return false;
-        }
-        else {
-            return $link->short_url;
-        }
+        return $link ?: false; // Return the full model
     }
 
-    static public function validateEnding($link_ending) {
-        $is_valid_ending = preg_match('/^[a-zA-Z0-9-_]+$/', $link_ending);
-        return $is_valid_ending;
+    public static function secretLinkExists($long_url, $username = false)
+    {
+        $query = Link::longUrl($long_url)
+            ->where('is_custom', 0)
+            ->whereNotNull('secret_key');
+
+        if ($username === null) {
+            $query->where(function ($q) {
+                $q->whereNull('creator')->orWhere('creator', '');
+            });
+        } elseif ($username !== false) {
+            $query->where('creator', $username);
+        }
+
+        $link = $query->first();
+        return $link ?: false; // Return the full model
+    }
+
+    public static function validateEnding($link_ending)
+    {
+        return preg_match('/^[a-zA-Z0-9-_]+$/', $link_ending);
     }
 
     static public function findPseudoRandomEnding() {
@@ -98,14 +92,10 @@ class LinkHelper {
          * @return string
          */
 
-        $pr_str = '';
-        $in_use = true;
-
-        while ($in_use) {
-            // Generate a new string until the ending is not in use
-            $pr_str = str_random(env('_PSEUDO_RANDOM_KEY_LENGTH'));
-            $in_use = LinkHelper::linkExists($pr_str);
-        }
+        $length = env('_PSEUDO_RANDOM_KEY_LENGTH', 6);
+        do {
+            $pr_str = str_random($length);
+        } while (self::linkExists($pr_str));
 
         return $pr_str;
     }
@@ -122,24 +112,18 @@ class LinkHelper {
             ->orderBy('created_at', 'desc')
             ->first();
 
-        if ($link == null) {
-            $base10_val = 0;
-            $base_x_val = 0;
-        }
-        else {
-            $latest_link_ending = $link->short_url;
-            $base10_val = BaseHelper::toBase10($latest_link_ending, $base);
-            $base10_val++;
-        }
+        $base10_val = $link ? BaseHelper::toBase10($link->short_url, $base) + 1 : 0;
 
-
-        $base_x_val = null;
-
-        while (LinkHelper::linkExists($base_x_val) || $base_x_val == null) {
+        do {
             $base_x_val = BaseHelper::toBase($base10_val, $base);
             $base10_val++;
-        }
+        } while (self::linkExists($base_x_val));
 
         return $base_x_val;
+    }
+
+    public static function findByEnding($ending)
+    {
+        return Link::where('short_url', $ending)->first();
     }
 }
