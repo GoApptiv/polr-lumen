@@ -1,29 +1,135 @@
-.content-div {
-    padding-top: 20px;
-    text-align: left;
+/* Reset/Margin adjustments */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f7f9fc;
+    color: #2c3e50;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
 }
 
-.license {
-    font-size: 80%;
-    margin-top: 40px;
-    width: auto;
-    color: black;
+.about-contents {
+    max-width: 720px;
+    margin: 3rem auto;
+    background-color: #ffffff;
+    padding: 2.5rem 3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(44, 62, 80, 0.12);
+    box-sizing: border-box;
 }
 
-.license-btn {
-    margin-top: 30px;
-    margin-bottom: 3em;
-    width: auto;
+.about-contents h2 {
+    font-size: 2.3rem;
+    color: #1a242f;
+    margin-bottom: 1.2rem;
+    font-weight: 700;
+    border-bottom: 2px solid #4669fa;
+    padding-bottom: 0.4rem;
+}
+
+.about-contents p {
+    font-size: 1.1rem;
+    color: #3a4a61;
+    margin-bottom: 1.3rem;
+    letter-spacing: 0.02em;
+}
+
+.about-contents strong {
+    color: #284aaf;
+    font-weight: 600;
+}
+
+.about-contents a {
+    color: #4669fa;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.about-contents a:hover,
+.about-contents a:focus {
+    color: #233d99;
+    text-decoration: underline;
+}
+
+/* Description list for build info */
+.about-contents dl {
+    background-color: #eef2fa;
+    border-radius: 8px;
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 1.8rem;
+    color: #33415c;
+    font-size: 1rem;
+    box-shadow: inset 0 0 8px rgba(70, 105, 250, 0.07);
+}
+
+.about-contents dl p {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    color: #4669fa;
+    padding-left: 0;
+}
+
+.about-contents dl dt {
+    font-weight: 600;
+    margin-top: 0.6rem;
+    color: #2e3a59;
+}
+
+.about-contents dl dd {
+    margin-left: 1.6rem;
+    color: #4a5a7a;
+}
+
+.admin-note {
+    font-size: 0.92rem;
+    color: #6a7a99;
+    background-color: #f1f4fb;
+    padding: 1rem 1.3rem;
+    border-left: 4px solid #4669fa;
+    border-radius: 4px;
+    line-height: 1.4;
+}
+
+/* Logo container */
+.logo-well {
+    margin: 2rem auto 1.5rem;
+    max-width: 200px;
+    text-align: center;
 }
 
 .logo-img {
-    width: 17em;
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 2px 3px rgba(70, 105, 250, 0.4));
+    border-radius: 20px;
+    transition: transform 0.3s ease;
 }
 
-.logo-well {
-    width: 20.5em;
+/* Subtle hover effect on logo */
+.logo-img:hover,
+.logo-img:focus {
+    transform: scale(1.06) rotate(-2deg);
+    filter: drop-shadow(0 5px 6px rgba(70, 105, 250, 0.6));
+    cursor: default;
+}
 
-    -webkit-animation: colorpulse 20s infinite;
-    animation: colorpulse 20s infinite;
-    -moz-animation: colorpulse 20s infinite;
+/* Horizontal rule styling */
+hr {
+    border: none;
+    border-top: 1.6px solid #dbe2f5;
+    margin: 2.2rem 0;
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-contents {
+        padding: 2rem 1.5rem;
+        margin: 2rem 1rem;
+    }
+
+    .about-contents h2 {
+        font-size: 1.75rem;
+    }
 }

@@ -1,29 +1,164 @@
-.custom-url-field {
-    display: inline;
-    width: 100px;
+body {
+    background: #f6f8fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #333;
+}
+
+.title {
+    text-align: center;
+    font-size: 2.6rem;
+    font-weight: 700;
+    margin: 2rem 0 1rem 0;
+    color: #293752;
+    letter-spacing: 1px;
+}
+
+form[role="form"] {
+    max-width: 440px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2.2rem 2rem 2rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 2px 24px rgba(40,60,80,0.12);
+}
+
+.form-group {
+    margin-bottom: 1.4rem;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 0.45rem;
+    display: block;
+    color: #1a202c;
+}
+
+input.form-control {
+    background: #f9fafb;
+    border: 1px solid #dbe0ea;
+    border-radius: 6px;
+    padding: 0.7rem 1rem;
+    font-size: 1.07rem;
+    transition: border-color 0.2s;
+    margin-bottom: 0.2rem;
+}
+
+input.form-control:focus {
+    border-color: #4669fa;
+    box-shadow: 0 1px 4px rgba(70,105,250,0.11);
+    outline: none;
+}
+
+.custom-link-text {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0.7rem 0 0.9rem 0;
 }
 
 .site-url-field {
-    color: green;
-    display: inline;
+    font-size: 1.13rem;
+    margin: 0;
+    font-weight: 500;
+    color: #4051b5;
 }
 
-.long-link-input {
-    margin-bottom: 25px;
+.custom-url-field {
+    flex: 1 1 60%;
+    font-size: 1.05rem;
 }
 
-.tips {
-    margin-top: 20px;
+.btn,
+button,
+input[type="submit"] {
+    border: none;
+    border-radius: 5px;
+    background: #4669fa;
+    color: #fff;
+    padding: 0.57rem 1.3rem;
+    font-weight: 500;
+    font-size: 1rem;
+    margin: 0.25rem 0.15rem;
+    transition: background 0.17s;
+    cursor: pointer;
+    box-shadow: 0 1px 5px rgba(70,105,250,0.08);
 }
 
-.check-btn {
-    margin-bottom: 30px;
+.btn-warning {
+    background: #ffcb3c;
+    color: #293752;
+}
+
+.btn-success {
+    background: #43c57b;
+}
+
+.btn-info {
+    background: #536dfe;
+}
+
+.btn-xs {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.92rem;
+}
+
+.btn:hover,
+button:hover,
+input[type="submit"]:hover {
+    background: #2a46c0;
+    color: #fff;
+}
+
+.btn-group.btn-toggle {
+    display: flex;
+    gap: 0.45rem;
+    margin-bottom: 0.8rem;
+}
+
+.btn-group label {
+    /* For Bootstrap style toggle look */
+    background: #e9eefa;
+    color: #4669fa;
+    border: 1px solid #b8c4e5;
+    cursor: pointer;
+    font-size: 0.98rem;
+    padding: 0.38rem 1rem;
+    border-radius: 4px;
+    margin-right: 0.13rem;
+    transition: background 0.17s, color 0.17s;
+}
+
+.btn-group .btn.active,
+.btn-group .btn:active {
+    background: #4669fa;
+    color: #fff;
+    box-shadow: 0 0.5px 3px rgba(70,105,250,0.11);
+}
+
+#tips {
+    max-width: 420px;
+    margin: 2rem auto 0 auto;
+    background: #e9eefa;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    font-size: 0.97rem;
+    color: #4051b5;
+    text-align: center;
 }
 
 #link-availability-status {
-    margin-bottom: 20px;
+    min-height: 1.1em;
+    margin-top: 0.3rem;
+    font-size: 0.93rem;
 }
 
-.visibility-toggler {
-    margin-bottom: 2em;
+/* Responsive Design */
+@media (max-width: 600px) {
+    form[role="form"] {
+        padding: 1.4rem 0.8rem 1.3rem;
+    }
+    .title {
+        font-size: 1.55rem;
+    }
 }
+
